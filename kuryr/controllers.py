@@ -116,22 +116,27 @@ class Handler(object):
     # subnetpool
     def create_subnetpool(self, ctxt, **attrs):
         LOG.debug("attrs %s ", attrs)
-
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
-        return nc.create_subnetpool(**attrs)
+        return nc.create_subnetpool(attrs)
 
-    def delete_subnetpool(self, ctxt, subnetpool):
-        LOG.debug("pool %s ", subnetpool)
-
+    def delete_subnetpool(self, ctxt, **attrs):
+        LOG.debug("pool %s ", attrs)
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
-        return nc.delete_subnetpool(subnetpool)
+        return nc.delete_subnetpool(attrs.get('pool_id', ''))
 
-    def list_subnetpools(self, ctxt, **attrs):
+    def list_subnetpools_by_name(self, ctxt, **attrs):
         LOG.debug("attrs %s ", attrs)
         nc = get_neutron_client()
-        return nc.list_subnetpools(**attrs)
+
+        return nc.list_subnetpools(name=attrs.get('name', ''))
+
+    def list_subnetpools_by_id(self, ctxt, **attrs):
+        LOG.debug("attrs %s ", attrs)
+        nc = get_neutron_client()
+
+        return nc.list_subnetpools(id=attrs.get('id', ''))
 
     # network
     def create_network(self, ctxt, **attrs):
@@ -139,21 +144,22 @@ class Handler(object):
 
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
-        return nc.create_network(**attrs)
+        return nc.create_network(attrs)
 
     def update_network(self, ctxt, **attrs):
         LOG.debug("attrs %s ", attrs)
-
+        netid = attrs.get('uuid', '')
+        net = attrs.get('net', '')
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
-        return nc.update_network(**attrs)
+        return nc.update_network(netid, net)
 
-    def delete_network(self, ctxt, net):
-        LOG.debug("net %s ", net)
-
+    def delete_network(self, ctxt, **attrs):
+        LOG.debug("net %s ", attrs)
+        netid = attrs.get('netid', '')
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
-        return nc.delete_network(net)
+        return nc.delete_network(netid)
 
     def list_networks(self, ctxt, **attrs):
         LOG.debug("attrs %s ", attrs)
@@ -169,21 +175,23 @@ class Handler(object):
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
 
-        return nc.create_subnet(**attrs)
+        return nc.create_subnet(attrs)
 
     def update_subnet(self, ctxt, **attrs):
         LOG.debug("attrs %s ", attrs)
 
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
-        return nc.update_subnet(**attrs)
+        return nc.update_subnet(attrs)
 
-    def delete_subnet(self, ctxt, subnet):
-        LOG.debug("subnet %s ", subnet)
+    def delete_subnet(self, ctxt, **attrs):
+        LOG.debug("subnet %s ", attrs)
+
+        subnet_id = attrs.get('subnet_id', '')
 
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
-        return nc.delete_subnet(subnet)
+        return nc.delete_subnet(subnet_id)
 
     def list_subnets(self, ctxt, **attrs):
         LOG.debug("attrs %s ", attrs)
@@ -198,22 +206,31 @@ class Handler(object):
 
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
-        return nc.create_port(**attrs)
+        return nc.create_port(attrs)
 
-    def update_port(self, ctxt, **attrs):
+    def show_port(self, ctxt, **attrs):
         LOG.debug("attrs %s ", attrs)
 
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
-        return nc.update_port(**attrs)
+        return nc.show_port(attrs.get('port_id', ''))
 
-    def delete_port(self, ctxt, port):
-        LOG.debug("port %s ", port)
+    def update_port(self, ctxt, **attrs):
+        LOG.debug("attrs %s ", attrs)
+        port_id = attrs.get('id', '')
+        port = attrs.get('port', '')
+
+        # TODO(vikasc): use ctxt
+        nc = get_neutron_client()
+        return nc.update_port(port_id, port)
+
+    def delete_port(self, ctxt, **attrs):
+        LOG.debug("port %s ", attrs)
 
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
 
-        return nc.delete_port(port)
+        return nc.delete_port(attrs.get('portid', ''))
 
     def list_ports(self, ctxt, **attrs):
         LOG.debug("attrs %s ", attrs)
@@ -223,17 +240,21 @@ class Handler(object):
         return nc.list_ports(**attrs)
 
     # tags
-    def add_tag(self, ctxt, _type, _id, tag):
-        LOG.debug("id %s ", _id)
-        LOG.debug("tag %s ", tag)
+    def add_tag(self, ctxt, **attrs):
+        LOG.debug("tag details %s ", attrs)
+        _type = attrs.get('resource', '')
+        _id = attrs.get('netid', '')
+        tag = attrs.get('tag', '')
 
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
         return nc.add_tag(_type, _id, tag)
 
-    def remove_tag(self, ctxt, _type, _id, tag):
-        LOG.debug("id %s ", _id)
-        LOG.debug("tag %s ", tag)
+    def remove_tag(self, ctxt, **attrs):
+        LOG.debug("tag details %s ", attrs)
+        _type = attrs.get('resource', '')
+        _id = attrs.get('netid', '')
+        tag = attrs.get('tag', '')
 
         # TODO(vikasc): use ctxt
         nc = get_neutron_client()
