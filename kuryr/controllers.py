@@ -16,7 +16,7 @@ from neutronclient.neutron import client
 from oslo_config import cfg
 from oslo_log import log
 
-from kuryr import app
+#from kuryr import app
 from kuryr import utils
 
 LOG = log.getLogger(__name__)
@@ -89,7 +89,7 @@ def get_neutron_client():
             url=neutron_uri, auth_url=auth_uri, token=auth_token)
     return neutron_client
 
-
+"""
 def neutron_client():
     if not hasattr(app, 'neutron'):
         app.neutron = get_neutron_client()
@@ -97,6 +97,7 @@ def neutron_client():
         app.vif_plug_is_fatal = cfg.CONF.neutron_client.vif_plugging_is_fatal
         app.vif_plug_timeout = cfg.CONF.neutron_client.vif_plugging_timeout
         app.neutron.format = 'json'
+"""
 
 
 class Handler(object):

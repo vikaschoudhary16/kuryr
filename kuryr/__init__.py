@@ -15,4 +15,4 @@ from pkgutil import extend_path
 
 __path__ = extend_path(__path__, __name__)
 
-app = utils.make_json_app(__name__)
+#app = utils.make_json_app(__name__)
