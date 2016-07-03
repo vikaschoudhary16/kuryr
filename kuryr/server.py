@@ -13,23 +13,29 @@
 import sys
 
 from oslo_log import log
+from oslo_service import service
 
-from kuryr import app
-from kuryr.common import config
 from kuryr import controllers
+from kuryr.lib import config
+from kuryr.lib import rpc_service
+from kuryr.lib import short_id
 
+LOG = log.getLogger(__name__)
 
 config.init(sys.argv[1:])
-controllers.neutron_client()
-controllers.check_for_neutron_ext_support()
-controllers.check_for_neutron_ext_tag()
 
 log.setup(config.CONF, 'Kuryr')
 
 
 def start():
-    port = int(config.CONF.kuryr_uri.split(':')[-1])
-    app.run("0.0.0.0", port)
+    controller_id = short_id.generate_id()
+    endpoints = [controllers.Handler()]
+    server = rpc_service.Service.create('kuryr-controller',
+                                        controller_id, endpoints,
+                                        binary='kuryr-controller')
+    launcher = service.launch(config.CONF, server)
+    LOG.debug("LAUNCHED")
+    launcher.wait()
 
 
 if __name__ == '__main__':
