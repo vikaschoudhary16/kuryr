@@ -21,7 +21,7 @@ import uuid
 
 import six
 
-from kuryr._i18n import _
+from kuryr.lib._i18n import _
 
 
 def _to_byte_string(value, num_bits):
