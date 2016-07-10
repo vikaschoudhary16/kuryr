@@ -17,6 +17,8 @@ import socket
 from neutronclient.neutron import client
 from neutronclient.v2_0 import client as client_v2
 
+from kuryr.lib import constants as const
+
 DOCKER_NETNS_BASE = '/var/run/docker/netns'
 PORT_POSTFIX = 'port'
 
@@ -39,6 +41,14 @@ def get_neutron_client(url, username, tenant_name, password,
 def get_hostname():
     """Returns the host name."""
     return socket.gethostname()
+
+
+def get_veth_pair_names(port_id):
+    ifname = const.VETH_PREFIX + port_id
+    ifname = ifname[:const.NIC_NAME_LEN]
+    peer_name = const.CONTAINER_VETH_PREFIX + port_id
+    peer_name = peer_name[:const.NIC_NAME_LEN]
+    return ifname, peer_name
 
 
 def getrandbits(bit_size=256):

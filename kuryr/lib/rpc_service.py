@@ -14,7 +14,6 @@
 
 """Common RPC service and API tools for Kuryr."""
 
-import eventlet
 from oslo_config import cfg
 import oslo_messaging as messaging
 from oslo_service import service
@@ -26,7 +25,6 @@ from kuryr.lib import rpc
 # Unfortunately it forces a version that has a crash
 # bug.  Calling eventlet.monkey_patch() tells kombu
 # to use libamqp instead.
-eventlet.monkey_patch()
 
 # NOTE(asalkeld):
 # The kuryr.openstack.common.rpc entries are for compatibility
