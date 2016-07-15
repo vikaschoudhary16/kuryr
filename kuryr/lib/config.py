@@ -19,8 +19,8 @@ import os
 from oslo_config import cfg
 from oslo_log import log
 
-from kuryr._i18n import _
-from kuryr import version
+from _i18n import _
+import version
 
 
 core_opts = [
@@ -102,13 +102,15 @@ binding_opts = [
 
 
 CONF = cfg.CONF
-CONF.register_opts(core_opts)
+#CONF.register_opts(core_opts)
 CONF.register_opts(neutron_opts, group='neutron_client')
 CONF.register_opts(keystone_opts, group='keystone_client')
 CONF.register_opts(binding_opts, 'binding')
 
 # Setting oslo.log options for logging.
 log.register_options(CONF)
+log.set_defaults(default_log_levels='kuryr=DEBUG,\
+                  requests.packages.urllib3.connectionpool=WARN')
 
 
 def init(args, **kwargs):
