@@ -177,8 +177,8 @@ class RestDriver(object):
 
         devstack produces a clouds.yaml with two named clouds - one named
         'devstack' which has user privs and one named 'devstack-admin' which
-        has admin privs. This function will default to getting the devstack-admin
-        cloud as that is the current expected behavior.
+        has admin privs. This function will default to getting the
+        devstack-admin cloud as that is the current expected behavior.
         """
         return self._get_cloud_config(cloud=cloud).get_auth_args()
 
@@ -199,8 +199,9 @@ class RestDriver(object):
         try:
             # First try to retrieve neutron client from a working OS deployment
             # This is used for gate testing.
-            # Since this always use admin credentials, next patch will introduce
-            # a config parameter that disable this for production environments
+            # Since this always use admin credentials, next patch will
+            # introduce a config parameter that disable this for production
+            # environments
             neutron_client = self._get_neutron_client_from_creds()
             return neutron_client
         except Exception:
