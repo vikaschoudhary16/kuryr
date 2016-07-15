@@ -144,26 +144,10 @@ class RestDriver(object):
         return self.neutron.remove_tag(_type, _id, tag)
 
     # security_groups
-    def create_security_group(self, **attrs):
-        LOG.debug("attrs %s ", attrs)
-
-        return self.neutron.create_security_group(attrs)
-
-    def delete_security_group(self, **attrs):
-        LOG.debug("sg %s ", attrs)
-
-        return self.neutron.delete_security_group(attrs.get('id', ''))
-
     def list_security_groups(self, **attrs):
         LOG.debug("attrs %s ", attrs)
 
         return self.neutron.list_security_groups(**attrs)
-
-    # security_group_rule
-    def create_security_group_rule(self, **attrs):
-        LOG.debug("attrs %s ", attrs)
-
-        return self.neutron.create_security_group_rule(attrs)
 
     def _get_cloud_config(self, cloud='devstack-admin'):
         return os_client_config.OpenStackConfig().get_one_cloud(cloud=cloud)
