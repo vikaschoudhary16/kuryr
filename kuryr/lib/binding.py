@@ -143,6 +143,7 @@ def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
 
     vif_type = neutron_port.get(VIF_TYPE_KEY, FALLBACK_VIF_TYPE)
     vif_details = utils.string_mappings(neutron_port.get(VIF_DETAILS_KEY))
+    import pdb; pdb.set_trace()
     binding_exec_path = os.path.join(bindir, vif_type)
     if not os.path.exists(binding_exec_path):
         cleanup_veth(ifname)
