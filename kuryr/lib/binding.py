@@ -17,6 +17,7 @@ from oslo_concurrency import processutils
 from oslo_utils import excutils
 import pyroute2
 
+from kuryr.lib import config
 from kuryr.lib import exceptions
 from kuryr import utils
 
@@ -96,7 +97,7 @@ def cleanup_veth(ifname):
         return None
 
 
-def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
+def port_bind(endpoint_id, neutron_port, neutron_subnets):
     """Binds the Neutron port to the network interface on the host.
 
     :param endpoint_id:     the ID of the endpoint as string
@@ -143,8 +144,7 @@ def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
 
     vif_type = neutron_port.get(VIF_TYPE_KEY, FALLBACK_VIF_TYPE)
     vif_details = utils.string_mappings(neutron_port.get(VIF_DETAILS_KEY))
-    import pdb; pdb.set_trace()
-    binding_exec_path = os.path.join(bindir, vif_type)
+    binding_exec_path = os.path.join(config.CONF.bindir, vif_type)
     if not os.path.exists(binding_exec_path):
         cleanup_veth(ifname)
         raise exceptions.BindingNotSupportedFailure(
@@ -166,7 +166,7 @@ def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
     return (ifname, peer_name, (stdout, stderr))
 
 
-def port_unbind(endpoint_id, neutron_port, bindir):
+def port_unbind(endpoint_id, neutron_port):
     """Unbinds the Neutron port from the network interface on the host.
 
     :param endpoint_id: the ID of the Docker container as string
@@ -178,7 +178,7 @@ def port_unbind(endpoint_id, neutron_port, bindir):
 
     vif_type = neutron_port.get(VIF_TYPE_KEY, FALLBACK_VIF_TYPE)
     vif_details = utils.string_mappings(neutron_port.get(VIF_DETAILS_KEY))
-    unbinding_exec_path = os.path.join(bindir, vif_type)
+    unbinding_exec_path = os.path.join(config.CONF.bindir, vif_type)
 
     port_id = neutron_port['id']
     ifname, _ = utils.get_veth_pair_names(port_id)
