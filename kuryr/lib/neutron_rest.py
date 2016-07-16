@@ -242,4 +242,3 @@ class RestDriver(object):
             url=neutron_uri, username=username, tenant_name=tenant_name,
             password=password, auth_url=auth_uri)
         return neutron_client
-

@@ -30,7 +30,7 @@ def _to_byte_string(value, num_bits):
     Padding is added at the end (i.e. after the least-significant bit) if
     required.
     """
-    shifts = six.moves.xrange(num_bits - 8, -8, -8)
+    shifts = six.moves.range(num_bits - 8, -8, -8)
     byte_at = lambda off: (value >> off if off >= 0 else value << -off) & 0xff
     return ''.join(chr(byte_at(offset)) for offset in shifts)
 
