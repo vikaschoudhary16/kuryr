@@ -24,8 +24,11 @@ LOG = log.getLogger(__name__)
 
 class RestDriver(object):
 
-    def __init__(self, cfg):
-        self.neutron = self._get_neutron_client(cfg)
+    def __init__(self, cfg=None, ctxt=None):
+        if cfg:
+            self.neutron = self._get_neutron_client(cfg)
+        if ctxt:
+            self.neutron = self._get_neutron_client_ctxt(ctxt)
         self.neutron.format = 'json'
 
     def show_extension(self, **attrs):
@@ -227,3 +230,16 @@ class RestDriver(object):
             neutron_client = utils.get_neutron_client_simple(
                 url=neutron_uri, auth_url=auth_uri, token=auth_token)
         return neutron_client
+
+    def _get_neutron_client_ctxt(self, ctxt):
+        # TODO(vikasc): use ctxt to get neutron client
+        neutron_uri = 'http://127.0.0.1:9696'
+        username = 'admin'
+        tenant_name = 'admin'
+        password = 'pass'
+        auth_uri = 'http://127.0.0.1:35357/v2.0'
+        neutron_client = utils.get_neutron_client(
+            url=neutron_uri, username=username, tenant_name=tenant_name,
+            password=password, auth_url=auth_uri)
+        return neutron_client
+
