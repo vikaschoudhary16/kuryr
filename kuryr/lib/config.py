@@ -20,7 +20,7 @@ from oslo_config import cfg
 from oslo_log import log
 
 from kuryr.lib._i18n import _
-import version
+import kuryr.lib.version
 
 
 core_opts = [
