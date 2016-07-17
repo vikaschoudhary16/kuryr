@@ -19,7 +19,7 @@ import os
 from oslo_config import cfg
 from oslo_log import log
 
-from _i18n import _
+from kuryr.lib._i18n import _
 import version
 
 
