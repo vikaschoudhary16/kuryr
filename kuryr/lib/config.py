@@ -19,8 +19,8 @@ import os
 from oslo_config import cfg
 from oslo_log import log
 
-from _i18n import _
-import version
+from kuryr.lib._i18n import _
+import kuryr.lib.version
 
 
 core_opts = [
