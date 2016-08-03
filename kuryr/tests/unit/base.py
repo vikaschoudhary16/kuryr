@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
 # a copy of the License at
@@ -12,6 +10,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kuryr import server
+from oslotest import base
 
-server.start()
+
+class TestCase(base.BaseTestCase):
+    """Test case base class for all unit tests."""
+
+    def setUp(self):
+        super(TestCase, self).setUp()

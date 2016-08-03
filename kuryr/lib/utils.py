@@ -16,6 +16,7 @@ import socket
 
 from neutronclient.neutron import client
 from neutronclient.v2_0 import client as client_v2
+from oslo_config import cfg
 
 from kuryr.lib import constants as const
 
@@ -49,6 +50,37 @@ def get_veth_pair_names(port_id):
     peer_name = const.CONTAINER_VETH_PREFIX + port_id
     peer_name = peer_name[:const.NIC_NAME_LEN]
     return ifname, peer_name
+
+
+def get_neutron_subnetpool_name(subnet_cidr):
+    """Returns a Neutron subnetpool name.
+
+    :param subnet_cidr: The subnetpool allocation cidr
+    :returns: the Neutron subnetpool_name name formatted appropriately
+    """
+    name_prefix = cfg.CONF.subnetpool_name_prefix
+    return '-'.join([name_prefix, subnet_cidr])
+
+
+def get_dict_format_fixed_ips_from_kv_format(fixed_ips):
+    """Returns fixed_ips in dict format.
+
+    :param fixed_ips: Format that neutron client expects for list_ports ex,
+                      ['subnet_id=5083bda8-1b7c-4625-97f3-1d4c33bfeea8',
+                       'ip_address=192.168.1.2']
+    :returns: normal dict form,
+              [{'subnet_id': '5083bda8-1b7c-4625-97f3-1d4c33bfeea8',
+                'ip_address': '192.168.1.2'}]
+    """
+    new_fixed_ips = []
+    for fixed_ip in fixed_ips:
+        if 'subnet_id' == fixed_ip.split('=')[0]:
+            subnet_id = fixed_ip.split('=')[1]
+        else:
+            ip = fixed_ip.split('=')[1]
+            new_fixed_ips.append({'subnet_id': subnet_id,
+                'ip_address': ip})
+    return new_fixed_ips
 
 
 def getrandbits(bit_size=256):
