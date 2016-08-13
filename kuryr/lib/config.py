@@ -52,6 +52,10 @@ neutron_opts = [
     cfg.StrOpt('neutron_uri',
                default=os.environ.get('OS_URL', 'http://127.0.0.1:9696'),
                help=_('Neutron URL for accessing the network service.')),
+    cfg.StrOpt('neutron_client_mode',
+               default='REST',
+               help=_('`REST` for talking to neutron client directly. '
+                      '`RPC` for talking to neutron client via controller')),
     cfg.StrOpt('enable_dhcp',
                default='True',
                help=_('Enable or Disable dhcp for neutron subnets.')),
