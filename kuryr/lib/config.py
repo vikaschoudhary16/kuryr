@@ -20,33 +20,16 @@ from oslo_config import cfg
 from oslo_log import log
 
 from kuryr.lib._i18n import _
-import kuryr.lib.version
+from kuryr.lib import version
 
 
 core_opts = [
-    cfg.StrOpt('pybasedir',
-               default=os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                    '../../')),
-               help=_('Directory where Kuryr python module is installed.')),
     cfg.StrOpt('bindir',
                default='$pybasedir/usr/libexec/kuryr',
                help=_('Directory for Kuryr vif binding executables.')),
-    cfg.StrOpt('kuryr_uri',
-               default='http://127.0.0.1:2377',
-               help=_('Kuryr URL for accessing Kuryr through json rpc.')),
-    cfg.StrOpt('capability_scope',
-               default=os.environ.get('CAPABILITY_SCOPE', 'local'),
-               choices=['local', 'global'],
-               help=_('Kuryr plugin scope reported to libnetwork.')),
     cfg.StrOpt('subnetpool_name_prefix',
                default='kuryrPool',
                help=_('Neutron subnetpool name will be prefixed by this.')),
-    cfg.StrOpt('local_default_address_space',
-               default='no_address_space',
-               help=_('There is no address-space by default in neutron')),
-    cfg.StrOpt('global_default_address_space',
-               default='no_address_space',
-               help=_('There is no address-space by default in neutron')),
 ]
 neutron_opts = [
     cfg.StrOpt('neutron_uri',
@@ -106,15 +89,13 @@ binding_opts = [
 
 
 CONF = cfg.CONF
-#CONF.register_opts(core_opts)
+CONF.register_opts(core_opts)
 CONF.register_opts(neutron_opts, group='neutron_client')
 CONF.register_opts(keystone_opts, group='keystone_client')
 CONF.register_opts(binding_opts, 'binding')
 
 # Setting oslo.log options for logging.
 log.register_options(CONF)
-log.set_defaults(default_log_levels='kuryr=DEBUG,\
-                  requests.packages.urllib3.connectionpool=WARN')
 
 
 def init(args, **kwargs):
