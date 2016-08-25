@@ -14,10 +14,10 @@ import os
 
 import netaddr
 from oslo_concurrency import processutils
+from oslo_config import cfg
 from oslo_utils import excutils
 import pyroute2
 
-from kuryr.lib import config
 from kuryr.lib import exceptions
 from kuryr.lib import utils
 
@@ -34,6 +34,7 @@ SUBNET_ID_KEY = 'subnet_id'
 UNBINDING_SUBCOMMAND = 'unbind'
 VIF_TYPE_KEY = 'binding:vif_type'
 VIF_DETAILS_KEY = 'binding:vif_details'
+DEFAULT_NETWORK_MTU = 1500
 
 _IPDB_CACHE = None
 _IPROUTE_CACHE = None
@@ -97,7 +98,8 @@ def cleanup_veth(ifname):
         return None
 
 
-def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
+def port_bind(endpoint_id, neutron_port, neutron_subnets,
+              neutron_network=None):
     """Binds the Neutron port to the network interface on the host.
 
     :param endpoint_id:     the ID of the endpoint as string
@@ -105,6 +107,7 @@ def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
                             python-neutronclient
     :param neutron_subnets: a list of all subnets under network to which this
                             endpoint is trying to join
+    :param neutron_network: network which this endpoint is trying to join
     :returns: the tuple of the names of the veth pair and the tuple of stdout
               and stderr returned by processutils.execute invoked with the
               executable script for binding
@@ -116,6 +119,10 @@ def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
     port_id = neutron_port['id']
     ifname, peer_name = utils.get_veth_pair_names(port_id)
     subnets_dict = {subnet['id']: subnet for subnet in neutron_subnets}
+    if neutron_network is None:
+        mtu = DEFAULT_NETWORK_MTU
+    else:
+        mtu = neutron_network.get('mtu', DEFAULT_NETWORK_MTU)
 
     try:
         with ip.create(ifname=ifname, kind=KIND_VETH,
@@ -132,6 +139,7 @@ def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
                     subnet = subnets_dict[subnet_id]
                     cidr = netaddr.IPNetwork(subnet['cidr'])
                     peer_veth.add_ip(fixed_ip[IP_ADDRESS_KEY], cidr.prefixlen)
+            peer_veth.set_mtu(mtu)
             peer_veth.address = neutron_port[MAC_ADDRESS_KEY].lower()
             if not _is_up(peer_veth):
                 peer_veth.up()
@@ -144,7 +152,7 @@ def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
 
     vif_type = neutron_port.get(VIF_TYPE_KEY, FALLBACK_VIF_TYPE)
     vif_details = utils.string_mappings(neutron_port.get(VIF_DETAILS_KEY))
-    binding_exec_path = os.path.join(bindir, vif_type)
+    binding_exec_path = os.path.join(cfg.CONF.bindir, vif_type)
     if not os.path.exists(binding_exec_path):
         cleanup_veth(ifname)
         raise exceptions.BindingNotSupportedFailure(
@@ -166,7 +174,7 @@ def port_bind(endpoint_id, neutron_port, neutron_subnets, bindir):
     return (ifname, peer_name, (stdout, stderr))
 
 
-def port_unbind(endpoint_id, neutron_port, bindir):
+def port_unbind(endpoint_id, neutron_port):
     """Unbinds the Neutron port from the network interface on the host.
 
     :param endpoint_id: the ID of the Docker container as string
@@ -178,7 +186,7 @@ def port_unbind(endpoint_id, neutron_port, bindir):
 
     vif_type = neutron_port.get(VIF_TYPE_KEY, FALLBACK_VIF_TYPE)
     vif_details = utils.string_mappings(neutron_port.get(VIF_DETAILS_KEY))
-    unbinding_exec_path = os.path.join(bindir, vif_type)
+    unbinding_exec_path = os.path.join(cfg.CONF.bindir, vif_type)
 
     port_id = neutron_port['id']
     ifname, _ = utils.get_veth_pair_names(port_id)

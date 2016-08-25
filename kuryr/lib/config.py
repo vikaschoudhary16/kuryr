@@ -17,15 +17,13 @@ Routines for configuring Kuryr
 import os
 
 from oslo_config import cfg
-from oslo_log import log
 
 from kuryr.lib._i18n import _
-from kuryr.lib import version
 
 
 core_opts = [
     cfg.StrOpt('bindir',
-               default='$pybasedir/usr/libexec/kuryr',
+               default='/usr/libexec/kuryr',
                help=_('Directory for Kuryr vif binding executables.')),
     cfg.StrOpt('subnetpool_name_prefix',
                default='kuryrPool',
@@ -35,10 +33,6 @@ neutron_opts = [
     cfg.StrOpt('neutron_uri',
                default=os.environ.get('OS_URL', 'http://127.0.0.1:9696'),
                help=_('Neutron URL for accessing the network service.')),
-    cfg.StrOpt('neutron_client_mode',
-               default='REST',
-               help=_('`REST` for talking to neutron client directly. '
-                      '`RPC` for talking to neutron client via controller')),
     cfg.StrOpt('enable_dhcp',
                default='True',
                help=_('Enable or Disable dhcp for neutron subnets.')),
@@ -86,18 +80,3 @@ binding_opts = [
                help=('The name prefix of the veth endpoint put inside the '
                      'container.'))
 ]
-
-
-CONF = cfg.CONF
-CONF.register_opts(core_opts)
-CONF.register_opts(neutron_opts, group='neutron_client')
-CONF.register_opts(keystone_opts, group='keystone_client')
-CONF.register_opts(binding_opts, 'binding')
-
-# Setting oslo.log options for logging.
-log.register_options(CONF)
-
-
-def init(args, **kwargs):
-    cfg.CONF(args=args, project='kuryr',
-             version=version.version_info.release_string(), **kwargs)
