@@ -310,6 +310,7 @@ class RestDriver(object):
         tenant_name = creds['project_name']
         password = creds['password']
         auth_url = creds['auth_url'] + "/v2.0"
+        LOG.error(_LE("Error auth_url %s"), auth_url)
         neutron_client = client.Client('2.0', username=username,
                                        tenant_name=tenant_name,
                                        password=password,
@@ -335,6 +336,7 @@ class RestDriver(object):
         password = keystone_conf.admin_password
         auth_token = keystone_conf.admin_token
         auth_uri = keystone_conf.auth_uri.rstrip('/')
+        LOG.error(_LE("Error auth_uri %s"), auth_uri)
         ca_cert = keystone_conf.auth_ca_cert
         insecure = keystone_conf.auth_insecure
 
